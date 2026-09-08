@@ -19,7 +19,7 @@
 
 Markets move in seconds. Human traders blink.
 
-This bot was built as a tireless companion for that chaos — a small machine that never sleeps, never second-guesses, and never misses a window. While BTC 5-minute and 15-minute prediction markets open, reprice, and expire, it sits on the book: watching Binance depth, reading order-book imbalance, and hunting the gap between what the crowd is pricing and where flow is actually going.
+This bot was built as a tireless companion for that chaos — a small machine that never sleeps, never second-guesses, and never misses a window. While BTC 5-minute and 15-minute prediction markets open, reprice, and expire, it sits on the book.
 
 When YES and NO drift apart from that pressure, it trades the edge. When both sides of a market are sitting in the wallet, it merges them back into USDT so capital stays in play for the next candle.
 
@@ -51,7 +51,6 @@ Under the hood:
 
 1. **Resolve the active market** — every 5 minutes a new `btc-updown-5m-*` category opens on predict.fun.
 2. **Read two books** — predict.fun YES/NO prices, plus Binance top-of-book imbalance.
-3. **Decide** — OBI crosses entry / exit / flip thresholds (`BUY_YES`, `BUY_NO`, `EXIT_*`, `FLIP_*`).
 4. **Execute** — live mode consumes pre-signed limit buys so the hot path is a POST, not a wallet sign.
 5. **Recycle capital** — merge leftover YES and NO shares into USDT on a timer.
 
@@ -70,7 +69,7 @@ Under the hood:
 
 ```bash
 git clone <your-repo-url>
-cd "Predictfun - Copy"
+cd "predictfun-trading-bot"
 
 bun install
 cp .env.example .env
@@ -90,7 +89,6 @@ Fill in `.env`:
 | `PRESIGN_PER_BUCKET` | no | Pre-signed BUY orders per side/size when a 5m market starts (default `100`) |
 | `PAPER_PNL_PATH` | no | Paper PnL JSON path (default `paper-pnl.json`) |
 | `ORDER_POST_LATENCY_MS` | no | Simulated fill delay in paper mode (default `300`) |
-| `OBI_MODE` | no | `legacy` or `predictive` (default `legacy`) |
 | `MERGE_INTERVAL_MS` | no | Merge poll interval (default `60000`) |
 | `MERGE_MIN_WEI` | no | Minimum mergeable shares (default `0.01`) |
 
@@ -192,17 +190,8 @@ bun install
 
 ## Strategy notes
 
-**Legacy OBI** (default): trade off raw Binance imbalance.
+**Predictive**: estimates imbalance a few hundred milliseconds ahead (velocity, persistence, optional microprice confirmation) so entries can fire.
 
-- Enter YES when OBI > **+80**
-- Enter NO when OBI < **−80**
-- Exit YES when OBI < **+30**
-- Exit NO when OBI > **−30**
-- A full reversal flips the position instead of going flat
-
-**Predictive OBI**: estimates imbalance a few hundred milliseconds ahead (velocity, persistence, optional microprice confirmation) so entries can fire before the raw ±80 cross.
-
-Tune via env: `EARLY_ENTRY_OBI`, `BULLISH_ENTRY_PREDICTED_OBI`, `BEARISH_ENTRY_PREDICTED_OBI`, `YES_EXIT_OBI`, `NO_EXIT_OBI`, `EXECUTION_LATENCY_MS`, `PREDICTION_HORIZON_MS`, and related knobs in `.env.example`.
 
 ---
 
