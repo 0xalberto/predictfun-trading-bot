@@ -1,0 +1,24 @@
+{
+  "name": "predictfun-btc-5m",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun --watch src/index.ts",
+    "paper": "bun run src/paper.ts",
+    "paper:new": "bun run src/paper_new.ts",
+    "live": "bun run src/live.ts",
+    "merge": "bun run src/merge.ts",
+    "order": "bun run src/testorder.ts",
+    "test": "bun test",
+    "backtest:obi": "bun run src/obi_backtest.ts"
+  },
+  "devDependencies": {
+    "bun-types": "^1.4.0"
+  },
+  "dependencies": {
+    "@predictdotfun/sdk": "^1.3.8",
+    "ethers": "^6.17.0"
+  }
+}
